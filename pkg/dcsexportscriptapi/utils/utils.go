@@ -1,38 +1,9 @@
-package dcsexportscriptapi
+package utils
 
 import (
-	"bytes"
-	"encoding/ascii85"
-	"encoding/gob"
 	"regexp"
 	"strings"
 )
-
-func DeserializeDataStream(dataStream *[]byte) (string, error) {
-	buffer := bytes.NewBuffer(*dataStream)
-	encoder := gob.NewEncoder(buffer)
-	err := encoder.Encode(buffer)
-	if err != nil {
-		return "", err
-	}
-
-	var encodedDataStream []byte
-	ascii85.Encode(encodedDataStream, *dataStream)
-
-	var b strings.Builder
-
-	_, err = b.Write(encodedDataStream)
-
-	if err != nil {
-		return "nil", err
-	}
-
-	return b.String(), nil
-}
-
-func testStrLen(str string) bool {
-	return len(str) == 0
-}
 
 func ExtractUIDAndValue(str string, splitChar string) map[string]string {
 	if testStrLen(str) {
@@ -67,6 +38,10 @@ func ExtractUIDAndValue(str string, splitChar string) map[string]string {
 	}
 
 	return keyValStrMap
+}
+
+func testStrLen(str string) bool {
+	return len(str) == 0
 }
 
 func convertKeyValStrToMap(strSplitedByChar []string) (map[string]string, bool) {
