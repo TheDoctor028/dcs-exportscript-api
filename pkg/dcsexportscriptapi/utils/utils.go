@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"github.com/thedoctor028/dcsexportscriptapi/models"
 	"regexp"
 	"strings"
 )
 
-func ExtractUIDAndValue(str string, splitChar string) map[string]string {
+func ExtractUIDAndValue(str string, splitChar string) *models.DCSData {
+
 	if testStrLen(str) {
 		return nil
 	}
@@ -44,8 +46,8 @@ func testStrLen(str string) bool {
 	return len(str) == 0
 }
 
-func convertKeyValStrToMap(strSplitedByChar []string) (map[string]string, bool) {
-	keyValueMap := make(map[string]string)
+func convertKeyValStrToMap(strSplitedByChar []string) (*models.DCSData, bool) {
+	keyValueMap := models.NewDcsData()
 
 	// Remove values without UID(key)
 	for i := range strSplitedByChar {
@@ -57,8 +59,8 @@ func convertKeyValStrToMap(strSplitedByChar []string) (map[string]string, bool) 
 
 		if matched {
 			keyValSplited := strings.Split(iStr, "=")
-			keyValueMap[keyValSplited[0]] = keyValSplited[1]
+			keyValueMap.Data[keyValSplited[0]] = keyValSplited[1]
 		}
 	}
-	return keyValueMap, true
+	return &keyValueMap, true
 }

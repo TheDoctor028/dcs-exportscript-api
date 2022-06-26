@@ -31,7 +31,7 @@ func ServerUDP(address string, port int, buffer *[]byte, cb func()) {
 
 	for {
 		_, remoteaddr, err := ser.ReadFromUDP(*buffer)
-		logger.Printf("Read a message from %v \n", remoteaddr)
+		//logger.Printf("Read a message from %v \n", remoteaddr)
 		if err != nil {
 			logger.Printf("Some error  %v", err)
 			continue

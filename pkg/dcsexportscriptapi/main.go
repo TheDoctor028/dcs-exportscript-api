@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/thedoctor028/dcsexportscriptapi/api"
 	"github.com/thedoctor028/dcsexportscriptapi/udpConnection"
 	"github.com/thedoctor028/dcsexportscriptapi/utils"
 	"log"
@@ -14,12 +15,17 @@ var dataLogger = initDataLogger()
 var buffer = make([]byte, 1024*2)
 
 func main() {
+	go api.Serve("127.0.0.1:8000")
 	udpConnection.ServerUDP("127.0.0.1", 8080, &buffer, cbOnBufferListening)
 }
 
 func cbOnBufferListening() {
 	res := utils.ExtractUIDAndValue(string(buffer), ":")
 	dataLogger.Println(res)
+	dataScreenData := res.GetDataByUid("9999")
+	if dataScreenData != nil {
+		api.SendEventToAllConnections(*dataScreenData)
+	}
 }
 
 func initDataLogger() log.Logger {
