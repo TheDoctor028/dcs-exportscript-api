@@ -2,19 +2,29 @@ package udpConnection
 
 import (
 	"fmt"
+	"log"
 	"net"
 )
 
-func SendDataToUDPServer(addr string, port int, data string) {
-	conn, err := net.Dial("udp", "127.0.0.1:26027")
+var SenderConn *net.UDPConn
+
+func ServerUDPSender(port int) {
+	var err error
+	SenderConn, err = net.ListenUDP("udp", &net.UDPAddr{Port: port})
 
 	if err != nil {
-		fmt.Printf("Some error %v\n", err)
-		return
+		log.Fatal("Listen:", err)
 	}
-	_, err = fmt.Fprintf(conn, data)
 
 	if err != nil {
 		fmt.Printf("Can't send command via UDP error: ", err)
 	}
+}
+
+func SendDataToUDPServer(conn *net.UDPConn, addr *net.UDPAddr, data string) {
+	n, err := conn.WriteTo([]byte(data), addr)
+	if err != nil {
+		log.Fatal("Write:", err)
+	}
+	fmt.Println("Sent", n, "bytes", conn.LocalAddr(), "->", addr)
 }

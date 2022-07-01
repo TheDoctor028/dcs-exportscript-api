@@ -12,11 +12,12 @@ var logger = log.New(os.Stdout, "Main: ", 0)
 
 var dataLogger = initDataLogger()
 
-var buffer = make([]byte, 5)
+var buffer = make([]byte, 1024)
 
 func main() {
 	go api.Serve("127.0.0.1:8000")
-	udpConnection.ServerUDP("127.0.0.1", 8080, &buffer, cbOnBufferListening)
+	go udpConnection.ServerUDPSender(1624)
+	udpConnection.ServerUDP("127.0.0.1", 1625, &buffer, cbOnBufferListening)
 }
 
 func cbOnBufferListening() {

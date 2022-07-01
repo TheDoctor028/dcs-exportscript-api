@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ExtractUIDAndValue(str string, splitChar string) *models.DCSData {
+func ExtractUIDAndValue(str string, splitChar string) *models.DCSExportData {
 
 	if testStrLen(str) {
 		return nil
@@ -46,7 +46,7 @@ func testStrLen(str string) bool {
 	return len(str) == 0
 }
 
-func convertKeyValStrToMap(strSplitedByChar []string) (*models.DCSData, bool) {
+func convertKeyValStrToMap(strSplitedByChar []string) (*models.DCSExportData, bool) {
 	keyValueMap := models.NewDcsData()
 
 	// Remove values without UID(key)

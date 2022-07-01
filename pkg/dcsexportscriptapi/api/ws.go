@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/thedoctor028/dcsexportscriptapi/udpConnection"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 )
@@ -37,7 +38,7 @@ func setUpWSConnection(w http.ResponseWriter, r *http.Request) {
 		log.Printf("recv: %s", message)
 
 		if string(message)[0] == 'C' {
-			udpConnection.SendDataToUDPServer("127.0.0.1", 26027, string(message))
+			udpConnection.SendDataToUDPServer(udpConnection.SenderConn, &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1626}, string(message))
 		}
 	}
 }
