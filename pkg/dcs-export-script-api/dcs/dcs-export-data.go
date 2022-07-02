@@ -1,14 +1,14 @@
-package dcs
+package DCS
 
-type DCSExportData struct {
+type ExportData struct {
 	Data map[string]string
 }
 
-func NewDcsData() DCSExportData {
-	return DCSExportData{Data: map[string]string{}}
+func NewDcsData() ExportData {
+	return ExportData{Data: map[string]string{}}
 }
 
-func (x DCSExportData) GetDataByUid(uid string) *string {
+func (x ExportData) GetDataByUid(uid string) *string {
 	item := x.Data[uid]
 	if len(item) != 0 {
 		return &item

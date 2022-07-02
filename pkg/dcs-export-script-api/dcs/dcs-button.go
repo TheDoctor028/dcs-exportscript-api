@@ -1,4 +1,4 @@
-package dcs
+package DCS
 
 type ButtonState float32
 
@@ -8,7 +8,7 @@ const (
 	Unknown     ButtonState = 99
 )
 
-type DcsButton struct {
+type Button struct {
 	id           int
 	defaultValue ButtonState
 	upValue      ButtonState
@@ -18,8 +18,8 @@ type DcsButton struct {
 
 // Press send a button down signal through the UDP socket until
 // receives a button down signal then send a button up signal util receives a button is up signal
-func (b DcsButton) Press() {}
+func (b Button) Press() {}
 
-func (b DcsButton) Release() {}
+func (b Button) Release() {}
 
-func (b DcsButton) Reset() {}
+func (b Button) Reset() {}
