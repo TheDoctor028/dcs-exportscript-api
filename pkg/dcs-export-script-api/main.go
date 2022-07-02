@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/thedoctor028/dcsexportscriptapi/api"
-	"github.com/thedoctor028/dcsexportscriptapi/udpConnection"
+	"github.com/thedoctor028/dcsexportscriptapi/udp-connection"
 	"github.com/thedoctor028/dcsexportscriptapi/utils"
 	"log"
 	"os"
@@ -16,8 +16,8 @@ var buffer = make([]byte, 1024)
 
 func main() {
 	go api.Serve("127.0.0.1:8000")
-	go udpConnection.ServerUDPSender(1624)
-	udpConnection.ServerUDP("127.0.0.1", 1625, &buffer, cbOnBufferListening)
+	go udpConnection.ServeUDPSender(1624)
+	udpConnection.ServeUDPServer("127.0.0.1", 1625, &buffer, cbOnBufferListening)
 }
 
 func cbOnBufferListening() {

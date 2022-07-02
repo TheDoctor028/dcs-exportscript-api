@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/thedoctor028/dcsexportscriptapi/udpConnection"
+	"github.com/thedoctor028/dcsexportscriptapi/udp-connection"
 	"log"
 	"net"
 	"net/http"

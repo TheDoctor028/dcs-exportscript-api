@@ -1,4 +1,4 @@
-package models
+package dcs
 
 type DCSExportData struct {
 	Data map[string]string

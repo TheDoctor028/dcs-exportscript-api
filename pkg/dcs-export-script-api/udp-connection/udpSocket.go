@@ -16,7 +16,7 @@ func sendResponse(conn *net.UDPConn, addr *net.UDPAddr) {
 	}
 }
 
-func ServerUDP(address string, port int, buffer *[]byte, cb func()) {
+func ServeUDPServer(address string, port int, buffer *[]byte, cb func()) {
 	addr := net.UDPAddr{
 		Port: port,
 		IP:   net.ParseIP(address),
