@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-var clientLogger = log.New(os.Stdout, "UDP Client: ", 102)
+var clientLogger = log.New(os.Stdout, "UDP Client: ", 101)
 
 var SenderConn *net.UDPConn
 
@@ -36,6 +36,11 @@ func SendDataToUDPServer(conn *net.UDPConn, addr *net.UDPAddr, data string) {
 func NewUDPSender(port int) (UDPSender, error) {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{
 		Port: port})
+
+	if err == nil {
+		clientLogger.Printf("Listening on UDP %s...\n", conn.LocalAddr())
+	}
+
 	return UDPSender{
 		Conn: conn,
 	}, err
