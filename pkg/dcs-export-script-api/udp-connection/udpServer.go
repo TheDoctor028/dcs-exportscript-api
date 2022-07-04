@@ -46,7 +46,7 @@ func (s *UDPServer) Serve() {
 
 // NewUDPServer creates a new UDPServer instance
 // with 1024 size buffer with an empty logging callBack
-func NewUDPServer(addr net.UDPAddr) (UDPServer, error) {
+func NewUDPServer(addr net.UDPAddr) (*UDPServer, error) {
 	server := UDPServer{
 		Addr: addr,
 		CB: func(buffer *[]byte, remoteAddr *net.UDPAddr) {
@@ -62,5 +62,5 @@ func NewUDPServer(addr net.UDPAddr) (UDPServer, error) {
 		server.Conn = conn
 	}
 
-	return server, err
+	return &server, err
 }

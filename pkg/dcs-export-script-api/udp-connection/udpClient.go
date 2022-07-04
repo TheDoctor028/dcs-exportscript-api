@@ -21,7 +21,7 @@ type UDPClient struct {
 // Start a UDP listener on the given port.
 // The Target must be set later.
 // @param {int} port - Listening port for UDP socket
-func NewUDPClient(port int) (UDPClient, error) {
+func NewUDPClient(port int) (*UDPClient, error) {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{
 		Port: port})
 
@@ -29,7 +29,7 @@ func NewUDPClient(port int) (UDPClient, error) {
 		clientLogger.Printf("Listening on UDP %s...\n", conn.LocalAddr())
 	}
 
-	return UDPClient{
+	return &UDPClient{
 		Conn: conn,
 	}, err
 }

@@ -19,12 +19,12 @@ var udpClient udpConnection.UDPClient
 
 func main() {
 	server, _ := udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1625})
-	udpClient, _ = udpConnection.NewUDPClient(1627)
+	udpClient, _ := udpConnection.NewUDPClient(1627)
 	udpClient.Target = net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1626}
 
 	server.CB = cbOnDataReceived
 	go server.Serve()
-	go api.Serve("127.0.0.1:8000", &udpClient)
+	go api.Serve("127.0.0.1:8000", udpClient)
 	wait()
 }
 
