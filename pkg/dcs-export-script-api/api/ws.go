@@ -2,9 +2,8 @@ package api
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/thedoctor028/dcsexportscriptapi/udp-connection"
+	udpConnection "github.com/thedoctor028/dcsexportscriptapi/udp-connection"
 	"log"
-	"net"
 	"net/http"
 	"strconv"
 )
@@ -18,27 +17,32 @@ var upgrader = websocket.Upgrader{
 var connections = map[int]*websocket.Conn{}
 var connId = 0
 
-func setUpWSConnection(w http.ResponseWriter, r *http.Request) {
-	connection, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer connection.Close()
-
-	connection.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(connId)))
-	connections[connId] = connection
-	connId++
-	for {
-		_, message, err := connection.ReadMessage()
+func setUpWSConnection(udpClient *udpConnection.UDPSender) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		connection, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			log.Println("read:", err)
-			break
+			log.Print("upgrade:", err)
+			return
 		}
-		log.Printf("recv: %s", message)
+		defer connection.Close()
 
-		if string(message)[0] == 'C' {
-			udpConnection.SendDataToUDPServer(udpConnection.SenderConn, &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1626}, string(message))
+		connection.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(connId)))
+		connections[connId] = connection
+		connId++
+		for {
+			_, message, err := connection.ReadMessage()
+			if err != nil {
+				log.Println("read:", err)
+				break
+			}
+			log.Printf("recv: %s", message)
+
+			if string(message)[0] == 'C' {
+				err := udpClient.SendData(string(message))
+				if err != nil {
+					println(err)
+				}
+			}
 		}
 	}
 }

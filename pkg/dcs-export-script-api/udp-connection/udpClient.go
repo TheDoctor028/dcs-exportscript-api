@@ -1,38 +1,26 @@
 package udpConnection
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"os"
 )
 
+// clientLogger
+// Logger for client events
 var clientLogger = log.New(os.Stdout, "UDP Client: ", 101)
 
-var SenderConn *net.UDPConn
-
+// UDPSender
+// Wrapped UDP socket for sending data to Target (target must be defined after init)
 type UDPSender struct {
-	Conn   *net.UDPConn
-	Target net.UDPAddr
-}
-
-func ServeUDPSender(port int) (*net.UDPConn, error) {
-	return net.ListenUDP("udp", &net.UDPAddr{
-		Port: port})
-}
-
-func SendDataToUDPServer(conn *net.UDPConn, addr *net.UDPAddr, data string) {
-	n, err := conn.WriteTo([]byte(data), addr)
-	if err != nil {
-		fmt.Printf("Can't send command via UDP error: ", err)
-	}
-
-	fmt.Println("Sent", n, "bytes", conn.LocalAddr(), "->", addr)
+	Conn   *net.UDPConn // UDP socket
+	Target net.UDPAddr  // Address of the destination server, to send the data
 }
 
 // NewUDPSender
 // Start a UDP listener on the given port.
 // The Target must be set later.
+// @param {int} port - Listening port for UDP socket
 func NewUDPSender(port int) (UDPSender, error) {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{
 		Port: port})
@@ -48,6 +36,7 @@ func NewUDPSender(port int) (UDPSender, error) {
 
 // SendData
 // Send the given string to the Target addr from the created connection
+// {string} data - String data to send to the server
 func (udp UDPSender) SendData(data string) error {
 	n, err := udp.Conn.WriteTo([]byte(data), &udp.Target)
 	if err != nil {

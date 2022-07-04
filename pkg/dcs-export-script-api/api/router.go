@@ -1,7 +1,10 @@
 package api
 
-import "net/http"
+import (
+	udpConnection "github.com/thedoctor028/dcsexportscriptapi/udp-connection"
+	"net/http"
+)
 
-func initRouter() {
-	http.HandleFunc("/test", setUpWSConnection)
+func initRouter(udpClient *udpConnection.UDPSender) {
+	http.HandleFunc("/test", setUpWSConnection(udpClient))
 }
