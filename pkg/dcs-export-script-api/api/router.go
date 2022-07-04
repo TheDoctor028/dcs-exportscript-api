@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func initRouter(udpClient *udpConnection.UDPSender) {
+func initRouter(udpClient *udpConnection.UDPClient) {
 	http.HandleFunc("/test", setUpWSConnection(udpClient))
 }

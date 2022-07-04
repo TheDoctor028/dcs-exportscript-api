@@ -15,11 +15,11 @@ var dataLogger = initDataLogger()
 
 var buffer = make([]byte, 1024)
 
-var udpClient udpConnection.UDPSender
+var udpClient udpConnection.UDPClient
 
 func main() {
 	server, _ := udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1625})
-	udpClient, _ = udpConnection.NewUDPSender(1626)
+	udpClient, _ = udpConnection.NewUDPClient(1626)
 
 	server.CB = cbOnDataReceived
 	go server.Serve()

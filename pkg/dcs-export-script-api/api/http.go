@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Serve(addr string, udpClient *udpConnection.UDPSender) {
+func Serve(addr string, udpClient *udpConnection.UDPClient) {
 	initRouter(udpClient)
 	log.Println("Listening API on: ", addr, "...")
 	log.Fatal(http.ListenAndServe(addr, nil))

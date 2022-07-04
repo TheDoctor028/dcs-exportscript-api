@@ -17,7 +17,7 @@ var upgrader = websocket.Upgrader{
 var connections = map[int]*websocket.Conn{}
 var connId = 0
 
-func setUpWSConnection(udpClient *udpConnection.UDPSender) func(w http.ResponseWriter, r *http.Request) {
+func setUpWSConnection(udpClient *udpConnection.UDPClient) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connection, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {

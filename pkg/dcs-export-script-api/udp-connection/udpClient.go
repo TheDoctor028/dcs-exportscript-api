@@ -10,18 +10,18 @@ import (
 // Logger for client events
 var clientLogger = log.New(os.Stdout, "UDP Client: ", 101)
 
-// UDPSender
+// UDPClient
 // Wrapped UDP socket for sending data to Target (target must be defined after init)
-type UDPSender struct {
+type UDPClient struct {
 	Conn   *net.UDPConn // UDP socket
 	Target net.UDPAddr  // Address of the destination server, to send the data
 }
 
-// NewUDPSender
+// NewUDPClient
 // Start a UDP listener on the given port.
 // The Target must be set later.
 // @param {int} port - Listening port for UDP socket
-func NewUDPSender(port int) (UDPSender, error) {
+func NewUDPClient(port int) (UDPClient, error) {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{
 		Port: port})
 
@@ -29,7 +29,7 @@ func NewUDPSender(port int) (UDPSender, error) {
 		clientLogger.Printf("Listening on UDP %s...\n", conn.LocalAddr())
 	}
 
-	return UDPSender{
+	return UDPClient{
 		Conn: conn,
 	}, err
 }
@@ -37,7 +37,7 @@ func NewUDPSender(port int) (UDPSender, error) {
 // SendData
 // Send the given string to the Target addr from the created connection
 // {string} data - String data to send to the server
-func (udp UDPSender) SendData(data string) error {
+func (udp UDPClient) SendData(data string) error {
 	n, err := udp.Conn.WriteTo([]byte(data), &udp.Target)
 	if err != nil {
 		clientLogger.Printf("Can't send command via UDP error: %s", err)
