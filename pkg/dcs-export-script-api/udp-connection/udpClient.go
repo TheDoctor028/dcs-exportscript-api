@@ -2,8 +2,12 @@ package udpConnection
 
 import (
 	"fmt"
+	"log"
 	"net"
+	"os"
 )
+
+var clientLogger = log.New(os.Stdout, "UDP Client: ", 102)
 
 var SenderConn *net.UDPConn
 
@@ -42,10 +46,10 @@ func NewUDPSender(port int) (UDPSender, error) {
 func (udp UDPSender) SendData(data string) error {
 	n, err := udp.Conn.WriteTo([]byte(data), &udp.Target)
 	if err != nil {
-		fmt.Printf("Can't send command via UDP error: %s", err)
+		clientLogger.Printf("Can't send command via UDP error: %s", err)
 		return err
 	}
 
-	fmt.Printf("Sent %d bytes from %s -> %s\n", n, udp.Conn.LocalAddr(), udp.Target)
+	clientLogger.Printf("Sent %d bytes from %s -> %s\n", n, udp.Conn.LocalAddr(), udp.Target)
 	return nil
 }

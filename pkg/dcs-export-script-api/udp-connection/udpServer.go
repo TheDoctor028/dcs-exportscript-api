@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-var logger = log.New(os.Stdout, "UDP Server: ", 100)
+var serverLogger = log.New(os.Stdout, "UDP Server: ", 101)
 
 // UDPServer
 // Wrapped UDP socket to receive UDP traffic
@@ -22,7 +22,7 @@ type UDPServer struct {
 func sendResponse(conn *net.UDPConn, addr *net.UDPAddr) {
 	_, err := conn.WriteToUDP([]byte("From server: Hello I got your message "), addr)
 	if err != nil {
-		logger.Printf("Couldn't send response %v", err)
+		serverLogger.Printf("Couldn't send response %v", err)
 	}
 }
 
@@ -37,13 +37,13 @@ func ServeUDPServer(address string, port int, buffer *[]byte, cb func()) {
 		return
 	}
 
-	logger.Printf("Listening on UDP %s:%d...", addr.IP, addr.Port)
+	serverLogger.Printf("Listening on UDP %s:%d...", addr.IP, addr.Port)
 
 	for {
 		_, remoteaddr, err := ser.ReadFromUDP(*buffer)
-		//logger.Printf("Read a message from %v \n", remoteaddr)
+		//serverLogger.Printf("Read a message from %v \n", remoteaddr)
 		if err != nil {
-			logger.Printf("Some error  %v", err)
+			serverLogger.Printf("Some error  %v", err)
 			continue
 		}
 		cb()
@@ -57,7 +57,7 @@ func serve(s *UDPServer) {
 		_, remoteaddr, err := s.Conn.ReadFromUDP(s.buffer)
 
 		if err != nil {
-			logger.Printf("Some error  %v", err)
+			serverLogger.Printf("Some error  %v", err)
 			continue
 		}
 		go s.CB(&s.buffer, remoteaddr)
@@ -71,7 +71,7 @@ func NewUDPServer(addr net.UDPAddr) (UDPServer, error) {
 	server := UDPServer{
 		Addr: addr,
 		CB: func(buffer *[]byte, remoteAddr *net.UDPAddr) {
-			logger.Printf("Data %d bytes received from %s", buffer, remoteAddr)
+			serverLogger.Printf("Data %d bytes received from %s", len(*buffer), remoteAddr)
 		},
 		buffer: make([]byte, 1024),
 	}
@@ -79,7 +79,7 @@ func NewUDPServer(addr net.UDPAddr) (UDPServer, error) {
 	conn, err := net.ListenUDP("udp", &addr)
 
 	if err == nil {
-		logger.Printf("Listening on UDP %s:%d...", addr.IP, addr.Port)
+		serverLogger.Printf("Listening on UDP %s:%d...", addr.IP, addr.Port)
 		server.Conn = conn
 		go serve(&server)
 	}
