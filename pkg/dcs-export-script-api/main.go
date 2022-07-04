@@ -16,7 +16,7 @@ var buffer = make([]byte, 1024)
 
 func main() {
 	go api.Serve("127.0.0.1:8000")
-	go udpConnection.ServeUDPSender(1624)
+	go udpConnection.ServeUDPSender(1626)
 	udpConnection.ServeUDPServer("127.0.0.1", 1625, &buffer, cbOnBufferListening)
 }
 
