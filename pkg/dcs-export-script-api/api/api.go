@@ -8,12 +8,16 @@ import (
 
 var apiLogger = log.New(os.Stdout, "API Server: ", 101)
 
+// API
+// Wrapper for the http/ws server
 type API struct {
 	Ip     string // Host ip of the Http server
 	Port   int    // Host port of the Http server
 	Router Router // Router instance to handel requests
 }
 
+// NewAPI
+// Constructor for the API struct
 func NewAPI(ip string, port int) *API {
 	api := API{
 		ip,
@@ -24,6 +28,8 @@ func NewAPI(ip string, port int) *API {
 	return &api
 }
 
+// Serve
+// Fires up the http server on the given ip/port (in the constructor)
 func (a API) Serve() error {
 	mergedAddr := mergeIpAndPort(a)
 
@@ -36,6 +42,8 @@ func (a API) Serve() error {
 	return err
 }
 
+// mergeIpAndPort
+// Returns the merged ip:port as a string
 func mergeIpAndPort(a API) string {
 	return a.Ip + ":" + string(rune(a.Port))
 }

@@ -5,12 +5,17 @@ import (
 	"net/http"
 )
 
+// RequestHandler alias for http handler function
 type RequestHandler = func(w http.ResponseWriter, r *http.Request)
 
+// Router
+// Wrapper for store the routes
 type Router struct {
 	Routes []Route
 }
 
+// Route
+// A http route with a handler
 type Route struct {
 	Path    string
 	Handler RequestHandler
