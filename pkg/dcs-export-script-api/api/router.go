@@ -25,14 +25,14 @@ func NewRouter() Router {
 	return Router{}
 }
 
+func (r Route) InitRoute() {
+	http.HandleFunc(r.Path, r.Handler)
+}
+
 func (r Router) InitRoutes() {
 	for _, route := range r.Routes {
 		route.InitRoute()
 	}
-}
-
-func (r Route) InitRoute() {
-	http.HandleFunc(r.Path, r.Handler)
 }
 
 func initRouter(udpClient *udpConnection.UDPClient) {

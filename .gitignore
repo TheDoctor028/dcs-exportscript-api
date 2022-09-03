@@ -17,3 +17,6 @@
 # Goland
 .idea
 .idea/
+
+pkg/dcs-export-script-api/logs
+pkg/dcs-export-script-api/logs/

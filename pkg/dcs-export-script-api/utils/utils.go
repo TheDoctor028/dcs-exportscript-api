@@ -3,6 +3,7 @@ package utils
 import (
 	DCS "github.com/thedoctor028/dcsexportscriptapi/dcs"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -59,7 +60,8 @@ func convertKeyValStrToMap(strSplitedByChar []string) (*DCS.ExportData, bool) {
 
 		if matched {
 			keyValSplited := strings.Split(iStr, "=")
-			keyValueMap.Data[keyValSplited[0]] = keyValSplited[1]
+			keyInt, _ := strconv.Atoi(keyValSplited[0])
+			keyValueMap.Data[keyInt] = keyValSplited[1]
 		}
 	}
 	return &keyValueMap, true
