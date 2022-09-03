@@ -13,12 +13,14 @@ import (
 
 var logger = log.New(os.Stdout, "Main: ", 0)
 
-var dataLogger = initDataLogger()
+var dataLogger, loggerFile = initDataLogger()
 
 func main() {
 	server, _ := udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1625})
 	udpClient, _ := udpConnection.NewUDPClient(1627)
 	udpClient.Target = net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1626}
+
+	defer loggerFile.Close()
 
 	server.CB = cbOnDataReceived
 	go server.Serve()
@@ -35,10 +37,9 @@ func cbOnDataReceived(buffer *[]byte, remoteAddr *net.UDPAddr) {
 	}
 }
 
-func initDataLogger() *log.Logger {
+func initDataLogger() (*log.Logger, *os.File) {
 	f, _ := os.OpenFile("./logs/data.logs-"+strconv.FormatInt(time.Now().Unix(), 10)+".txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
-	defer f.Close()
-	return log.New(f, " ////// ", 101)
+	return log.New(f, " ////// ", 101), f
 }
 
 func wait() {
