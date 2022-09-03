@@ -23,7 +23,7 @@ func (x ExportData) ToString() string {
 	res := ""
 
 	for i, e := range x.Data {
-		res += strconv.Itoa(i) + e
+		res += strconv.Itoa(i) + ":" + e + "\n"
 	}
 	return res
 }
