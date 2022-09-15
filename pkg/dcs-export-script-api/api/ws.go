@@ -67,8 +67,14 @@ type WS struct {
 
 func NewWs(upgrader *websocket.Upgrader) *WS {
 	return &WS{
-		nextConnID: 0,
-		Upgrader:   upgrader,
+		nextConnID:  0,
+		Upgrader:    upgrader,
+		Connections: map[int]*websocket.Conn{},
+		Handler: func(ws *WS) RequestHandler {
+			return func(w http.ResponseWriter, r *http.Request) {
+
+			}
+		},
 	}
 }
 

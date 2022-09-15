@@ -9,7 +9,7 @@ import (
 
 func (c *Service) initRawRouteWS() *api.WS {
 	ws := api.NewWs(&websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
-		return false
+		return true
 	}})
 
 	ws.Handler = func(ws *api.WS) api.RequestHandler {
@@ -25,12 +25,6 @@ func (c *Service) initRawRouteWS() *api.WS {
 
 			listenForCommands(conn, c)
 		}
-	}
-
-	err := c.api.AddWS(WEBSOCKET_RAW, ws)
-
-	if err != nil {
-		dcsClientLogger.Printf("Failed to create Raw WS! %s", err)
 	}
 
 	return ws

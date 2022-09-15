@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/thedoctor028/dcsexportscriptapi/api"
-	"github.com/thedoctor028/dcsexportscriptapi/udp-connection"
+	DCS "github.com/thedoctor028/dcsexportscriptapi/dcs"
 	"github.com/thedoctor028/dcsexportscriptapi/utils"
 	"log"
 	"net"
@@ -16,19 +16,19 @@ var logger = log.New(os.Stdout, "Main: ", 0)
 var dataLogger, loggerFile = initDataLogger()
 
 func main() {
-	server, _ := udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1625})
-	udpClient, _ := udpConnection.NewUDPClient(1627)
-	udpClient.Target = net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1626}
+	service := DCS.NewService()
+
+	err := service.CreateAndStartConnections()
+
+	if err != nil {
+		logger.Printf("Failed to create DCS Service! %s", err)
+	}
 
 	defer loggerFile.Close()
-
-	server.CB = cbOnDataReceived
-	go server.Serve()
-	go api.Serve("127.0.0.1:8000", udpClient)
 	wait()
 }
 
-func cbOnDataReceived(buffer *[]byte, remoteAddr *net.UDPAddr) {
+func cbOnDataReceived(buffer *[]byte, remoteAddr *net.UDPAddr) { // TODO move to Dcs Service
 	res := utils.ExtractUIDAndValue(string(*buffer), ":")
 	dataLogger.Println(res.ToString())
 	dataScreenData := res.GetDataByUid(50)

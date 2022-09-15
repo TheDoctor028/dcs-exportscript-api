@@ -31,15 +31,17 @@ type Service struct {
 	api       *api.API                 // Wrapped WS and HTTP server to send/revise data from/to the web client
 }
 
-// NewClient
+// NewService
 // Returns a new DCS.Service struct
-func NewClient() *Service {
+func NewService() *Service {
 	return &Service{
 		ExportIp:              "127.0.0.1",
 		ReceiverIp:            "127.0.0.1",
 		ExportPort:            1625,
 		ReceiverPort:          1626,
 		ReceiverListeningPort: 1627,
+		APIIp:                 "127.0.0.1",
+		APIPort:               8000,
 		Path:                  "C:\\Program Files\\DCS World",
 		PathSavedGames:        "C:\\Users\\user\\DCS",
 		udpServer:             nil,
@@ -50,9 +52,15 @@ func NewClient() *Service {
 
 func (c *Service) CreateAndStartConnections() error {
 	var err error
+	// UDP
 	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort)
 	c.udpServer, err = udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP(c.ExportIp), Port: c.ExportPort})
+	// API
 	c.api = api.NewAPI(c.APIIp, c.APIPort)
+	c.setUpApiRoutes()
+
+	go c.api.Serve()
+
 	if err != nil {
 		dcsClientLogger.Printf("Error creating DCS Service instance: %s\n", err)
 		return err
@@ -61,6 +69,8 @@ func (c *Service) CreateAndStartConnections() error {
 }
 
 func (c *Service) setUpApiRoutes() {
+	c.initWebSockets()
+
 	c.api.Router.AddRoute(api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
 		//  Route for network exploration if the user is not familiar with the ip of the dcs-service host
 		w.WriteHeader(200)
@@ -72,9 +82,5 @@ func (c *Service) setUpApiRoutes() {
 }
 
 func (c *Service) initWebSockets() {
-	err := c.api.AddWS(WEBSOCKET_RAW, c.initRawRouteWS())
-
-	if err != nil {
-		dcsClientLogger.Printf("Can't init websockets! %s", err)
-	}
+	c.api.AddWS(WEBSOCKET_RAW, c.initRawRouteWS())
 }
