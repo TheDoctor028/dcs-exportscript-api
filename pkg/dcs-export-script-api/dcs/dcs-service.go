@@ -16,7 +16,7 @@ type Service struct {
 	ReceiverIp            string // The host where DCS is running (Used by UDPClient)
 	ExportPort            int    // Export port where the export script sends data to, see Config.lua/ExportScript.Config.IkarusPort (Used by UDPServer)
 	ReceiverPort          int    // Listening port of the export script see Config.lua/ExportScript.Config.ListenerPort
-	ReceiverListeningPort int    // Listening port for the UDPClient (Used by UDPClient)
+	ReceiverListeningPort int    // Port for the UDPClient to send data from (Used by UDPClient)
 	APIIp                 string // Ip for the http/ws api server
 	APIPort               int    // Port for the http/ws api server
 	Path                  string // Path to the DCS (game) main directory example: C:\ProgramFiles\DCS World TODO NOT USED YET
@@ -54,9 +54,14 @@ func (c Service) CreateAndStartConnections() error {
 	return nil
 }
 
-func (s Service) setUpApiRoutes() {
-	s.api.Router.Routes = append(s.api.Router.Routes, api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
+func (c Service) setUpApiRoutes() {
+	c.api.Router.Routes = append(c.api.Router.Routes, api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
+		//  Route for network exploration if the user is not familiar with the ip of the dcs-service host
 		w.WriteHeader(200)
 		defer w.Write([]byte("Hello!"))
+	}}) // HELLO
+
+	c.api.Router.Routes = append(c.api.Router.Routes, api.Route{Path: "/raw", Handler: func(w http.ResponseWriter, r *http.Request) {
+
 	}})
 }
