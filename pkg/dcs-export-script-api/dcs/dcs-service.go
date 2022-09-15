@@ -56,10 +56,10 @@ func NewService() *Service {
 func (c *Service) CreateAndStartConnections() error {
 	var err error
 	// UDP
-	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort)
+	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort, c.ReceiverIp, c.ReceiverPort)
 	c.udpServer, err = udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP(c.ExportIp), Port: c.ExportPort})
 	c.initUDPServer()
-	c.udpServer.Serve()
+	go c.udpServer.Serve()
 
 	// API
 	c.api = api.NewAPI(c.APIIp, c.APIPort)
@@ -100,7 +100,7 @@ func (c *Service) initUDPServer() {
 		dataLogger.Println(res.ToString())
 
 		// TODO Implement new logic here
-		dataScreenData := res.GetDataByUid(50)
+		dataScreenData := res.GetDataByUid(900)
 		if dataScreenData != nil {
 			c.api.Websockets[WebsocketRaw].SendToAllConnections(*dataScreenData)
 		}
