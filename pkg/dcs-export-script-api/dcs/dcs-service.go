@@ -3,7 +3,6 @@ package DCS
 import (
 	"github.com/thedoctor028/dcsexportscriptapi/api"
 	udpConnection "github.com/thedoctor028/dcsexportscriptapi/udp-connection"
-	"github.com/thedoctor028/dcsexportscriptapi/utils"
 	"log"
 	"net"
 	"net/http"
@@ -57,9 +56,10 @@ func NewService() *Service {
 func (c *Service) CreateAndStartConnections() error {
 	var err error
 	// UDP
-	c.initUDPServer()
 	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort)
 	c.udpServer, err = udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP(c.ExportIp), Port: c.ExportPort})
+	c.initUDPServer()
+	c.udpServer.Serve()
 
 	// API
 	c.api = api.NewAPI(c.APIIp, c.APIPort)
@@ -96,7 +96,7 @@ func (c *Service) initWebSockets() {
 
 func (c *Service) initUDPServer() {
 	c.udpServer.CB = func(buffer *[]byte, remoteAddr *net.UDPAddr) {
-		res := utils.ExtractUIDAndValue(string(*buffer), ":")
+		res := ExtractUIDAndValue(string(*buffer), ":")
 		dataLogger.Println(res.ToString())
 
 		// TODO Implement new logic here
