@@ -55,13 +55,13 @@ func (c Service) CreateAndStartConnections() error {
 }
 
 func (c Service) setUpApiRoutes() {
-	c.api.Router.Routes = append(c.api.Router.Routes, api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
+	c.api.Router.AddRoute(api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
 		//  Route for network exploration if the user is not familiar with the ip of the dcs-service host
 		w.WriteHeader(200)
 		defer w.Write([]byte("Hello!"))
 	}}) // HELLO
 
-	c.api.Router.Routes = append(c.api.Router.Routes, api.Route{Path: "/raw", Handler: func(w http.ResponseWriter, r *http.Request) {
-
-	}})
+	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: func(w http.ResponseWriter, r *http.Request) {
+		// Route for getting all the data raw from the UDP socket
+	}}) // RAW
 }

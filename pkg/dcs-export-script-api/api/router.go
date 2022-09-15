@@ -25,6 +25,10 @@ func NewRouter() Router {
 	return Router{}
 }
 
+func (r Router) AddRoute(route Route) {
+	r.Routes = append(r.Routes, route)
+}
+
 func (r Route) InitRoute() {
 	http.HandleFunc(r.Path, r.Handler)
 }
