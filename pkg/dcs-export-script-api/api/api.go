@@ -11,9 +11,10 @@ var apiLogger = log.New(os.Stdout, "API Server: ", 101)
 // API
 // Wrapper for the http/ws server
 type API struct {
-	Ip     string // Host ip of the Http server
-	Port   int    // Host port of the Http server
-	Router Router // Router instance to handel requests
+	Ip         string         // Host ip of the Http server
+	Port       int            // Host port of the Http server
+	Router     Router         // Router instance to handel requests
+	Websockets map[string]*WS // Websockets of the api
 }
 
 // NewAPI
@@ -23,6 +24,7 @@ func NewAPI(ip string, port int) *API {
 		ip,
 		port,
 		NewRouter(),
+		map[string]*WS{},
 	}
 
 	return &api
@@ -30,7 +32,7 @@ func NewAPI(ip string, port int) *API {
 
 // Serve
 // Fires up the http server on the given ip/port (in the constructor)
-func (a API) Serve() error {
+func (a *API) Serve() error {
 	mergedAddr := mergeIpAndPort(a)
 
 	err := http.ListenAndServe(mergedAddr, nil)
@@ -42,8 +44,20 @@ func (a API) Serve() error {
 	return err
 }
 
+// AddWS
+// Adds a new websocket connection
+func (a *API) AddWS(name string, ws *WS) error {
+	if a.Websockets[name] == nil {
+		return errors.New("websocket already exists")
+	}
+
+	a.Websockets[name] = ws
+
+	return nil
+}
+
 // mergeIpAndPort
 // Returns the merged ip:port as a string
-func mergeIpAndPort(a API) string {
+func mergeIpAndPort(a *API) string {
 	return a.Ip + ":" + string(rune(a.Port))
 }
