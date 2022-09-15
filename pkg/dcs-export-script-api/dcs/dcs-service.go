@@ -16,7 +16,7 @@ var dcsClientLogger = log.New(os.Stdout, "DCS Service: ", 101)
 var dataLogger, loggerFile = initDataLogger()
 
 const (
-	WEBSOCKET_RAW api.WSName = "raw"
+	WebsocketRaw api.WSName = "raw"
 )
 
 type Service struct {
@@ -87,11 +87,11 @@ func (c *Service) setUpApiRoutes() {
 	}}) // HELLO
 
 	// Route for getting all the data raw from the UDP socket
-	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: c.api.Websockets[WEBSOCKET_RAW].GetHandler()}) // RAW
+	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: c.api.Websockets[WebsocketRaw].GetHandler()}) // RAW
 }
 
 func (c *Service) initWebSockets() {
-	c.api.AddWS(WEBSOCKET_RAW, c.initRawRouteWS())
+	c.api.AddWS(WebsocketRaw, c.initRawRouteWS())
 }
 
 func (c *Service) initUDPServer() {
@@ -102,7 +102,7 @@ func (c *Service) initUDPServer() {
 		// TODO Implement new logic here
 		dataScreenData := res.GetDataByUid(50)
 		if dataScreenData != nil {
-			//api.SendEventToAllConnections(*dataScreenData)
+			c.api.Websockets[WebsocketRaw].SendToAllConnections(*dataScreenData)
 		}
 	}
 }

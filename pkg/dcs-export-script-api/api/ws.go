@@ -2,8 +2,12 @@ package api
 
 import (
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
+	"os"
 )
+
+var wsLogger = log.New(os.Stdout, "WS Service: ", 101)
 
 type WS struct {
 	Connections map[int]*websocket.Conn     // The currently active connection on the websocket
@@ -33,4 +37,14 @@ func (ws *WS) AddNewConnection(conn *websocket.Conn) int {
 	ws.Connections[ws.nextConnID] = conn
 	ws.nextConnID++
 	return ws.nextConnID
+}
+
+func (ws *WS) SendToAllConnections(data string) {
+	for _, conn := range ws.Connections {
+		err := conn.WriteMessage(websocket.TextMessage, []byte(data))
+
+		if err != nil {
+			wsLogger.Printf("Can't send data to client: %s\n", err)
+		}
+	}
 }
