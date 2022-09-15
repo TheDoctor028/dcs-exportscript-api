@@ -1,6 +1,7 @@
 package utils_tests
 
 import (
+	"fmt"
 	"github.com/thedoctor028/dcsexportscriptapi/dcs"
 	"reflect"
 	"testing"
@@ -15,19 +16,20 @@ func TestExtractUIDAndValue(t *testing.T) {
 
 	res := DCS.ExtractUIDAndValue(text, ":")
 
-	if !reflect.DeepEqual(res, expected) {
-		t.Fatalf("Expected: %s \n Got: %s", expected, res)
+	if !reflect.DeepEqual(res.Data, expected) {
+
+		t.Fatalf("Expected: %s \n Got: %s", fmt.Sprintf("%v", expected), fmt.Sprintf("%v", res.Data))
 	}
 }
 
-func getExtractUIDAndValueExpectedValues() map[string]string {
-	keyValueMap := make(map[string]string)
-	keyValueMap["200"] = "0"
-	keyValueMap["184"] = "0"
-	keyValueMap["141"] = "0.0074"
-	keyValueMap["180"] = "0.4000"
-	keyValueMap["146"] = "0.0008"
-	keyValueMap["128"] = "-0.0682"
+func getExtractUIDAndValueExpectedValues() map[int]string {
+	keyValueMap := make(map[int]string)
+	keyValueMap[200] = "0"
+	keyValueMap[184] = "0"
+	keyValueMap[141] = "0.0074"
+	keyValueMap[180] = "0.4000"
+	keyValueMap[146] = "0.0008"
+	keyValueMap[128] = "-0.0682"
 
 	return keyValueMap
 }
