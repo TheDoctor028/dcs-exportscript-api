@@ -1,6 +1,7 @@
 package DCS
 
 import (
+	"github.com/gorilla/websocket"
 	"github.com/thedoctor028/dcsexportscriptapi/api"
 	udpConnection "github.com/thedoctor028/dcsexportscriptapi/udp-connection"
 	"log"
@@ -10,6 +11,10 @@ import (
 )
 
 var dcsClientLogger = log.New(os.Stdout, "DCS Service: ", 101)
+
+const (
+	WEBSOCKET_RAW api.WSName = "raw"
+)
 
 type Service struct {
 	ExportIp              string // The host where the UDP server is listening Config.lua/ExportScript.Config.IkarusHost (Used by UDPServer)
@@ -27,6 +32,8 @@ type Service struct {
 	api       *api.API                 // Wrapped WS and HTTP server to send/revise data from/to the web client
 }
 
+// NewClient
+// Returns a new DCS.Service struct
 func NewClient() *Service {
 	return &Service{
 		ExportIp:              "127.0.0.1",
@@ -42,7 +49,7 @@ func NewClient() *Service {
 	}
 }
 
-func (c Service) CreateAndStartConnections() error {
+func (c *Service) CreateAndStartConnections() error {
 	var err error
 	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort)
 	c.udpServer, err = udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP(c.ExportIp), Port: c.ExportPort})
@@ -54,14 +61,71 @@ func (c Service) CreateAndStartConnections() error {
 	return nil
 }
 
-func (c Service) setUpApiRoutes() {
+func (c *Service) setUpApiRoutes() {
 	c.api.Router.AddRoute(api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
 		//  Route for network exploration if the user is not familiar with the ip of the dcs-service host
 		w.WriteHeader(200)
 		defer w.Write([]byte("Hello!"))
 	}}) // HELLO
 
-	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: func(w http.ResponseWriter, r *http.Request) {
-		// Route for getting all the data raw from the UDP socket
-	}}) // RAW
+	// Route for getting all the data raw from the UDP socket
+	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: c.api.Websockets[WEBSOCKET_RAW].GetHandler()}) // RAW
+}
+
+func (c *Service) initWebSockets() {
+	err := c.api.AddWS(WEBSOCKET_RAW, c.initRawRouteWS())
+
+	if err != nil {
+		dcsClientLogger.Printf("Can't init websockets! %s", err)
+	}
+}
+
+func (c *Service) initRawRouteWS() *api.WS {
+	ws := api.NewWs(&websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
+		return false
+	}})
+
+	ws.Handler = func(ws *api.WS) api.RequestHandler {
+		return func(w http.ResponseWriter, r *http.Request) {
+			conn, err := ws.Upgrader.Upgrade(w, r, nil)
+			if err != nil {
+				dcsClientLogger.Print("Upgrade connection failed! %s", err)
+				return
+			}
+			defer conn.Close()
+
+			ws.AddNewConnection(conn)
+
+			listenForCommands(conn, c)
+		}
+	}
+
+	err := c.api.AddWS(WEBSOCKET_RAW, ws)
+
+	if err != nil {
+		dcsClientLogger.Printf("Failed to create Raw WS! %s", err)
+	}
+
+	return ws
+}
+
+// listenForCommands
+// Waits for commands on the ws to send it to DCS ExportScript UDP server
+// Example.:C12,3022,0 for more details see ExportScript docs
+func listenForCommands(conn *websocket.Conn, c *Service) {
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		log.Printf("recv: %s", message)
+
+		if string(message)[0] == 'C' {
+			err := c.udpClient.SendData(string(message))
+			if err != nil {
+				println(err)
+			}
+		}
+	}
 }

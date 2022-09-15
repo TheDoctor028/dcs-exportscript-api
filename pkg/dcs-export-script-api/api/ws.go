@@ -17,6 +17,7 @@ var upgrader = websocket.Upgrader{
 var connections = map[int]*websocket.Conn{}
 var connId = 0
 
+// LEGACY STUFF
 func setUpWSConnection(udpClient *udpConnection.UDPClient) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connection, err := upgrader.Upgrade(w, r, nil)
@@ -55,15 +56,13 @@ func SendEventToAllConnections(event string) {
 	}
 }
 
+// END OF LEGACY STUFF
+
 type WS struct {
-	// Public
-	Connections map[int]*websocket.Conn // The currently active connection on the websocket
-	Upgrader    *websocket.Upgrader
-	Handler     func(w http.ResponseWriter, r *http.Request)
-	//-----
-	//Private
-	nextConnID int
-	//-----
+	Connections map[int]*websocket.Conn     // The currently active connection on the websocket
+	Upgrader    *websocket.Upgrader         // Upgrader instance to upgrade HTTP -> WS
+	Handler     func(ws *WS) RequestHandler // Http request handler that upgrades the connection to ws and implements WS functionality
+	nextConnID  int                         // ID of the next incoming connection
 }
 
 func NewWs(upgrader *websocket.Upgrader) *WS {
@@ -73,7 +72,11 @@ func NewWs(upgrader *websocket.Upgrader) *WS {
 	}
 }
 
-func (ws *WS) addNewConnection(conn *websocket.Conn) int {
+func (ws *WS) GetHandler() RequestHandler {
+	return ws.Handler(ws)
+}
+
+func (ws *WS) AddNewConnection(conn *websocket.Conn) int {
 	ws.Connections[ws.nextConnID] = conn
 	ws.nextConnID++
 	return ws.nextConnID

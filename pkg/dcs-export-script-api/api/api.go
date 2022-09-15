@@ -8,13 +8,17 @@ import (
 
 var apiLogger = log.New(os.Stdout, "API Server: ", 101)
 
+// WSName
+// Type alias for WebSockets names (used for 'enums')
+type WSName string
+
 // API
 // Wrapper for the http/ws server
 type API struct {
 	Ip         string         // Host ip of the Http server
 	Port       int            // Host port of the Http server
 	Router     Router         // Router instance to handel requests
-	Websockets map[string]*WS // Websockets of the api
+	Websockets map[WSName]*WS // Websockets of the api
 }
 
 // NewAPI
@@ -24,7 +28,7 @@ func NewAPI(ip string, port int) *API {
 		ip,
 		port,
 		NewRouter(),
-		map[string]*WS{},
+		map[WSName]*WS{},
 	}
 
 	return &api
@@ -46,7 +50,7 @@ func (a *API) Serve() error {
 
 // AddWS
 // Adds a new websocket connection
-func (a *API) AddWS(name string, ws *WS) error {
+func (a *API) AddWS(name WSName, ws *WS) error {
 	if a.Websockets[name] == nil {
 		return errors.New("websocket already exists")
 	}
