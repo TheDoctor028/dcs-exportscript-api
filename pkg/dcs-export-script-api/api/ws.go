@@ -54,3 +54,25 @@ func SendEventToAllConnections(event string) {
 		log.Println("Error: ", conn.WriteMessage(websocket.TextMessage, []byte(event)))
 	}
 }
+
+type WS struct {
+	// Public
+	Connections map[int]*websocket.Conn // The currently active connection on the websocket
+	Upgrader    *websocket.Upgrader
+	Handler     func(w http.ResponseWriter, r *http.Request)
+	//-----
+	//Private
+	nextConnID int
+	//-----
+}
+
+func NewWs(upgrader *websocket.Upgrader) *WS {
+	return &WS{
+		nextConnID: 0,
+		Upgrader:   upgrader,
+	}
+}
+
+func (ws *WS) addNewConnection() {
+
+}
