@@ -1,7 +1,7 @@
 package utils_tests
 
 import (
-	"github.com/thedoctor028/dcsexportscriptapi/utils"
+	"github.com/thedoctor028/dcsexportscriptapi/dcs"
 	"reflect"
 	"testing"
 )
@@ -13,7 +13,7 @@ func TestExtractUIDAndValue(t *testing.T) {
 
 	t.Logf("Testing with %s", text)
 
-	res := utils.ExtractUIDAndValue(text, ":")
+	res := DCS.ExtractUIDAndValue(text, ":")
 
 	if !reflect.DeepEqual(res, expected) {
 		t.Fatalf("Expected: %s \n Got: %s", expected, res)
