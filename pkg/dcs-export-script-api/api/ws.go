@@ -73,6 +73,8 @@ func NewWs(upgrader *websocket.Upgrader) *WS {
 	}
 }
 
-func (ws *WS) addNewConnection() {
-
+func (ws *WS) addNewConnection(conn *websocket.Conn) int {
+	ws.Connections[ws.nextConnID] = conn
+	ws.nextConnID++
+	return ws.nextConnID
 }
