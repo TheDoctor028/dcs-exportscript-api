@@ -1,13 +1,12 @@
-package utils
+package DCS
 
 import (
-	DCS "github.com/thedoctor028/dcsexportscriptapi/dcs"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-func ExtractUIDAndValue(str string, splitChar string) *DCS.ExportData {
+func ExtractUIDAndValue(str string, splitChar string) *ExportData {
 
 	if testStrLen(str) {
 		return nil
@@ -47,8 +46,8 @@ func testStrLen(str string) bool {
 	return len(str) == 0
 }
 
-func convertKeyValStrToMap(strSplitedByChar []string) (*DCS.ExportData, bool) {
-	keyValueMap := DCS.NewDcsData()
+func convertKeyValStrToMap(strSplitedByChar []string) (*ExportData, bool) {
+	keyValueMap := NewDcsData()
 
 	// Remove values without UID(key)
 	for i := range strSplitedByChar {

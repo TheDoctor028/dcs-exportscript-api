@@ -7,12 +7,15 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 )
 
 var dcsClientLogger = log.New(os.Stdout, "DCS Service: ", 101)
+var dataLogger, loggerFile = initDataLogger()
 
 const (
-	WEBSOCKET_RAW api.WSName = "raw"
+	WebsocketRaw api.WSName = "raw"
 )
 
 type Service struct {
@@ -31,15 +34,17 @@ type Service struct {
 	api       *api.API                 // Wrapped WS and HTTP server to send/revise data from/to the web client
 }
 
-// NewClient
+// NewService
 // Returns a new DCS.Service struct
-func NewClient() *Service {
+func NewService() *Service {
 	return &Service{
 		ExportIp:              "127.0.0.1",
 		ReceiverIp:            "127.0.0.1",
 		ExportPort:            1625,
 		ReceiverPort:          1626,
 		ReceiverListeningPort: 1627,
+		APIIp:                 "127.0.0.1",
+		APIPort:               8000,
 		Path:                  "C:\\Program Files\\DCS World",
 		PathSavedGames:        "C:\\Users\\user\\DCS",
 		udpServer:             nil,
@@ -50,9 +55,17 @@ func NewClient() *Service {
 
 func (c *Service) CreateAndStartConnections() error {
 	var err error
-	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort)
+	// UDP
+	c.udpClient, err = udpConnection.NewUDPClient(c.ReceiverListeningPort, c.ReceiverIp, c.ReceiverPort)
 	c.udpServer, err = udpConnection.NewUDPServer(net.UDPAddr{IP: net.ParseIP(c.ExportIp), Port: c.ExportPort})
+	c.initUDPServer()
+	go c.udpServer.Serve()
+
+	// API
 	c.api = api.NewAPI(c.APIIp, c.APIPort)
+	c.setUpApiRoutes()
+	go c.api.Serve()
+
 	if err != nil {
 		dcsClientLogger.Printf("Error creating DCS Service instance: %s\n", err)
 		return err
@@ -60,7 +73,13 @@ func (c *Service) CreateAndStartConnections() error {
 	return nil
 }
 
+func (c *Service) Destroy() {
+	defer loggerFile.Close()
+}
+
 func (c *Service) setUpApiRoutes() {
+	c.initWebSockets()
+
 	c.api.Router.AddRoute(api.Route{Path: "/hello", Handler: func(w http.ResponseWriter, r *http.Request) {
 		//  Route for network exploration if the user is not familiar with the ip of the dcs-service host
 		w.WriteHeader(200)
@@ -68,13 +87,27 @@ func (c *Service) setUpApiRoutes() {
 	}}) // HELLO
 
 	// Route for getting all the data raw from the UDP socket
-	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: c.api.Websockets[WEBSOCKET_RAW].GetHandler()}) // RAW
+	c.api.Router.AddRoute(api.Route{Path: "/raw", Handler: c.api.Websockets[WebsocketRaw].GetHandler()}) // RAW
 }
 
 func (c *Service) initWebSockets() {
-	err := c.api.AddWS(WEBSOCKET_RAW, c.initRawRouteWS())
+	c.api.AddWS(WebsocketRaw, c.initRawRouteWS())
+}
 
-	if err != nil {
-		dcsClientLogger.Printf("Can't init websockets! %s", err)
+func (c *Service) initUDPServer() {
+	c.udpServer.CB = func(buffer *[]byte, remoteAddr *net.UDPAddr) {
+		res := ExtractUIDAndValue(string(*buffer), ":")
+		dataLogger.Println(res.ToString())
+
+		// TODO Implement new logic here
+		dataScreenData := res.GetDataByUid(900)
+		if dataScreenData != nil {
+			c.api.Websockets[WebsocketRaw].SendToAllConnections(*dataScreenData)
+		}
 	}
+}
+
+func initDataLogger() (*log.Logger, *os.File) {
+	f, _ := os.OpenFile("./logs/data.logs-"+strconv.FormatInt(time.Now().Unix(), 10)+".txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	return log.New(f, " //////\n ", 101), f
 }
