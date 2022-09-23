@@ -1,26 +1,35 @@
 package utils_tests
 
 import (
-	"fmt"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/thedoctor028/dcsexportscriptapi/dcs"
-	"reflect"
 	"testing"
 )
 
-func TestExtractUIDAndValue(t *testing.T) {
-	text := "62b74d61*146=0.0017:141=0.0074 \n:128=-0.0682:146=0.0008:180=0.4000:141=0.0018\n=0:184=0:200=0"
-
-	expected := getExtractUIDAndValueExpectedValues()
-
-	t.Logf("Testing with %s", text)
-
-	res := DCS.ExtractUIDAndValue(text, ":")
-
-	if !reflect.DeepEqual(res.Data, expected) {
-
-		t.Fatalf("Expected: %s \n Got: %s", fmt.Sprintf("%v", expected), fmt.Sprintf("%v", res.Data))
-	}
+func TestUtils(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Utils Suite")
 }
+
+var _ = Describe("Utils Tests", func() {
+	var sampleText string
+
+	BeforeEach(func() {
+		sampleText = "62b74d61*146=0.0017:141=0.0074 \n:128=-0.0682:146=0.0008:180=0.4000:141=0.0018\n=0:184=0:200=0"
+	})
+
+	Context("When the decoded string", func() {
+		It("should map it to an int string map", func() {
+			expected := getExtractUIDAndValueExpectedValues()
+
+			res := DCS.ExtractUIDAndValue(sampleText, ":")
+
+			Expect(res.Data).To(Equal(expected))
+		})
+	})
+
+})
 
 func getExtractUIDAndValueExpectedValues() map[int]string {
 	keyValueMap := make(map[int]string)
