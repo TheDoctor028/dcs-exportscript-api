@@ -1,16 +1,10 @@
-package utils_tests
+package dcs_tests
 
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/thedoctor028/dcsexportscriptapi/dcs"
-	"testing"
 )
-
-func TestUtils(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Utils Suite")
-}
 
 var _ = Describe("Utils Tests", func() {
 	var sampleText string
