@@ -34,8 +34,7 @@ type Service struct {
 	api       *api.API                 // Wrapped WS and HTTP server to send/revise data from/to the web client
 }
 
-// NewService
-// Returns a new DCS.Service struct
+// NewService Returns a new DCS.Service struct
 func NewService() *Service {
 	return &Service{
 		ExportIp:              "127.0.0.1",

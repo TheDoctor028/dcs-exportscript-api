@@ -10,6 +10,10 @@ import (
 // Logger for client events
 var clientLogger = log.New(os.Stdout, "UDP Client: ", 101)
 
+type IUDPClient interface {
+	SendData(data string) error // DOCS
+}
+
 // UDPClient
 // Wrapped UDP socket for sending data to Target (target must be defined after init)
 type UDPClient struct {

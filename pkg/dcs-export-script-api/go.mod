@@ -3,6 +3,7 @@ module github.com/thedoctor028/dcsexportscriptapi
 go 1.19
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/onsi/ginkgo/v2 v2.1.6
 	github.com/onsi/gomega v1.20.2
