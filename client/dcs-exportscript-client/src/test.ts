@@ -1,4 +1,5 @@
 import 'jest-preset-angular/setup-jest';
+import { ngMocks } from 'ng-mocks';
 
 Object.defineProperty(window, 'CSS', {value: null});
 Object.defineProperty(window, 'getComputedStyle', {
@@ -17,3 +18,8 @@ Object.defineProperty(document.body.style, 'transform', {
       configurable: true
     })
 });
+
+// All methods in mock declarations and providers
+// will be automatically spied on their creation.
+// https://ng-mocks.sudo.eu/extra/auto-spy
+ngMocks.autoSpy('jest');
