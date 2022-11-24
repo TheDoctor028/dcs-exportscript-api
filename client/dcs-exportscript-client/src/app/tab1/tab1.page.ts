@@ -33,7 +33,7 @@ export class Tab1Page implements OnInit {
       console.log('Could not connect to dcs service.');
       return of(err);
     })).subscribe((msg) => {
-      console.log('Received message from dcs service: ', msg);
+      //console.log('Received message from dcs service: ', msg);
     });
 
   }

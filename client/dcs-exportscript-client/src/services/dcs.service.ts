@@ -10,7 +10,7 @@ export class DcsService {
   // The default address of the DCS GO server. (with port but without protocol)
   public address = 'localhost:3333';
 
-  protected exportAPI$: Subject<string>;
+  protected exportAPI$: Subject<any>;
 
   constructor(
     protected readonly httpclient: HttpClient
@@ -24,16 +24,16 @@ export class DcsService {
     return this.httpclient.get<string>('http://' + this.address + '/hello');
   }
 
-  public connectWebsocket(): Subject<string> {
+  public connectWebsocket(): Subject<any> {
     if(!this.exportAPI$) {
       this.exportAPI$ = this.createWebsocket();
     }
     return this.exportAPI$;
   }
 
-  private createWebsocket(): AnonymousSubject<string> {
+  private createWebsocket(): AnonymousSubject<any> {
     const ws = new WebSocket('ws://' + this.address + '/raw');
-    const observable = new Observable((obs: Observer<string>) => {
+    const observable = new Observable((obs: Observer<any>) => {
       ws.onmessage = obs.next.bind(obs);
       ws.onerror = obs.error.bind(obs);
       ws.onclose = obs.complete.bind(obs);
@@ -45,11 +45,11 @@ export class DcsService {
       next: (data: any) => {
         console.log('Message sent to websocket: ', data);
         if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify(data));
+          ws.send(data);
         }
       }
     };
-    return new AnonymousSubject<string>(observer, observable);
+    return new AnonymousSubject<any>(observer, observable);
   };
 
 
