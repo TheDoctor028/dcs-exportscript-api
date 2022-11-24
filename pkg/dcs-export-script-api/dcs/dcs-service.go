@@ -43,7 +43,7 @@ func NewService() *Service {
 		ExportPort:            1625,
 		ReceiverPort:          1626,
 		ReceiverListeningPort: 1627,
-		APIIp:                 "127.0.0.1",
+		APIIp:                 "0.0.0.0",
 		APIPort:               8000,
 		Path:                  "C:\\Program Files\\DCS World",
 		PathSavedGames:        "C:\\Users\\user\\DCS",

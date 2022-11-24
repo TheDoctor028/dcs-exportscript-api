@@ -43,7 +43,7 @@ func (a *API) Serve() {
 	a.Router.InitRoutes()
 
 	apiLogger.Printf("API server listening on %s...", mergedAddr)
-	apiLogger.Fatal("API Failed: %s", http.ListenAndServe(mergedAddr, nil))
+	apiLogger.Fatalf("API Failed: %s", http.ListenAndServe(mergedAddr, nil))
 }
 
 // AddWS
