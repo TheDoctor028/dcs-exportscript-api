@@ -13,5 +13,18 @@
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <ng-container>
+    <ion-list>
+      <ion-item>
+        <ion-label>DCS Export api address</ion-label>
+        <ion-input [formControl]='addressControl' placeholder="127.0.0.1:3333"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-button (click)='connect()'>Connect</ion-button>
+      </ion-item>
+    </ion-list>
+
+  </ng-container>
+
 </ion-content>

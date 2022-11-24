@@ -24,7 +24,7 @@ export class DcsService {
     return this.httpclient.get<string>('http://' + this.address + '/hello');
   }
 
-  private connectWebsocket(): Subject<string> {
+  public connectWebsocket(): Subject<string> {
     if(!this.exportAPI$) {
       this.exportAPI$ = this.createWebsocket();
     }
