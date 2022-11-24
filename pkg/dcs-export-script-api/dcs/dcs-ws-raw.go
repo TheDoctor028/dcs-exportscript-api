@@ -30,7 +30,6 @@ func (c *Service) initRawRouteWS() *api.WS {
 	return ws
 }
 
-// listenForCommands
 // Waits for commands on the ws to send it to DCS ExportScript UDP server
 // Example.:C12,3022,0 for more details see ExportScript docs
 func listenForCommands(conn *websocket.Conn, c *Service) {
