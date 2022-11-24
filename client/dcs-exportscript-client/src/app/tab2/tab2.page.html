@@ -1,0 +1,20 @@
+<ion-content [fullscreen]="true">
+  <ion-grid [fixed]="true">
+    <ion-row>
+      <ion-col class="ion-text-center">
+        <ion-input size="large" [value]="dataVal" [readonly]="true"></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor='let r of [7,4,1]'>
+      <ion-col *ngFor='let c of [0,1,2]' class="ion-text-center">
+        <ion-button fill="outline" size="large" (click)='sendButtonPress(r+c)'>{{ r+c }}</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="ion-text-center">
+        <ion-button fill="outline" size="large" (click)='sendButtonPress(0)'>0</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

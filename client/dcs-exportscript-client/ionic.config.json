@@ -1,0 +1,7 @@
+{
+  "name": "dcs-exportscript-client",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
